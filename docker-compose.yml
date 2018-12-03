@@ -1,0 +1,44 @@
+version: '3.1'
+
+services:
+  php:
+    image: symfony-rabbitmq-php:latest
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    volumes:
+      - ./:/srv/app
+    networks:
+      - web
+    restart: always
+
+  nginx:
+    image: symfony-rabbitmq-nginx:latest
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    ports:
+      - 443:443
+      - 80:80
+    networks:
+      - web
+    volumes:
+      - ./:/srv/app
+    restart: always
+
+  rabbitmq:
+    image: symfony-rabbitmq-server:latest
+    build:
+      context: .
+      dockerfile: docker/rabbitmq/Dockerfile
+    ports:
+      - 5672:5672 
+      - 15672:15672
+    networks:
+      - web
+    restart: always
+
+networks:
+  web:
+    external:
+      name: web
